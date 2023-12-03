@@ -108,6 +108,50 @@ contract OgioROSCA is AccessControl {
         // Check for admin role using OpenZeppelin method
         return hasRole(ADMIN_ROLE, msg.sender);
     }
-}
+    }
 
+    // Function to create a new ROSCA group
+    function createROSCAGroup(
+        string memory _groupName,
+        string memory _description,
+        uint256 _contributionAmount,
+        uint256 _contributionFrequency,
+        uint256 _numberOfMembers,
+        uint256 _startDate,
+        uint256 _endDate,
+        address[] memory _initialMembers // Pass the actual addresses when creating the group
+    ) public {
+        // Check if the group name already exists
+        require(!groupExists(_groupName), "Group name already exists");
+
+        // Create a new ROSCA group struct
+        ROSCAGroup memory newGroup;
+
+        // Set the struct properties
+        newGroup.groupName = _groupName;
+        newGroup.description = _description;
+        newGroup.contributionAmount = _contributionAmount;
+        newGroup.contributionFrequency = _contributionFrequency;
+        newGroup.numberOfMembers = _numberOfMembers;
+        newGroup.startDate = _startDate;
+        newGroup.endDate = _endDate;
+
+        // Add the group to the list of active groups
+        activeGroupNames.push(_groupName);
+
+        // Initialize the roles mapping and members array
+        for (uint256 i = 0; i < _numberOfMembers; i++) {
+            address member = _initialMembers[i]; // Use actual addresses passed to the function
+            newGroup.members.push(member);
+            newGroup.roles[member] = UserRole.Member;
+        }
+
+        // Add the struct to the activeGroups mapping
+        activeGroups[_groupName] = newGroup;
+
+        // Emit the ROSCAGroupCreated event
+        emit ROSCAGroupCreated(_groupName);
+    }
+
+    
 }
