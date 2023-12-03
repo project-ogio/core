@@ -256,5 +256,27 @@ contract OgioROSCA is AccessControl {
     }
     }
 
-    
+    function removeUser(string memory _groupName, address _userAddress) public {
+    // Check if the group exists
+    require(groupExists(_groupName), "Group does not exist");
+
+    // Check access control (e.g., only Coordinator or Admin can remove members)
+    require(hasRole(UserRole.Admin), "Unauthorized action");
+
+    // Check if user exists in the group
+    require(activeGroups[_groupName].roles[_userAddress] != UserRole.None, "User not in group");
+
+    // Remove user role
+    activeGroups[_groupName].roles[_userAddress] = UserRole.None;
+
+    // Emit event
+    emit UserRemoved(_groupName, _userAddress);
+    }
+
+    // Function to get the list of members in a group
+    function getGroupMembers(string memory _groupName) public view returns (address[] memory) {
+    return activeGroups[_groupName].members;
+    }
+
+
 }
