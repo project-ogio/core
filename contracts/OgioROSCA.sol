@@ -377,6 +377,5 @@ contract OgioROSCA is AccessControl {
         }
     }
     revert("Group not found");
-}
-
+    }
 }
