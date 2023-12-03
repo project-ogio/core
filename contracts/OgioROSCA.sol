@@ -314,5 +314,69 @@ contract OgioROSCA is AccessControl {
     }
     }
 
+    // Implement the ManageEscrow function
+    function manageEscrow(string memory _action, string memory _groupName, address _userAddress) public {
+    // Check if the group exists
+    require(groupExists(_groupName), "Group does not exist");
+
+    // Restrict access to authorized users
+    // ... implement access control logic here ...
+
+    // Call the escrow contract for managing the escrow
+    OgioExcrow(escrowContract).manageEscrow(_action, _groupName, _userAddress);
+
+    // Emit event regardless of success/failure
+    emit EscrowManaged(_action, _groupName, _userAddress);
+    }
+
+    // Implement the TrackHistory function
+    function trackHistory(string memory _groupName, string memory _type, string memory _details) public {
+    // Call the escrow contract to track the transaction
+    OgioExcrow(escrowContract).trackHistory(_groupName, _type, _details);
+
+    // Emit event regardless of success/failure
+    emit TransactionTracked(_groupName, _type, _details);
+    }
+
+    // Implement the VerifyDocumentation function
+    function verifyDocumentation(string memory _groupName, string memory _documentHash) public {
+    // Check if the group exists
+    require(groupExists(_groupName), "Group does not exist");
+
+    // Call the escrow contract to verify documentation
+    bool isValid = OgioExcrow(escrowContract).verifyDocumentation(_groupName, _documentHash);
+
+    if (isValid) {
+        // Emit event on successful verification
+        emit DocumentationVerified(_groupName, true);
+    } else {
+        // Emit event on verification failure
+        emit VerificationFailed(_groupName, "Invalid documentation");
+    }
+    }
+    // Helper function to check if a group is active
+    function isGroupActive(string memory _groupName) internal view returns (bool) {
+        uint256 currentDate = block.timestamp;
+        return (currentDate >= activeGroups[_groupName].startDate && currentDate <= activeGroups[_groupName].endDate);
+    }
+
+    // Helper function to check if a group exists
+    function groupExists(string memory _groupName) internal view returns (bool) {
+        for (uint256 i = 0; i < activeGroups.length; i++) {
+            if (keccak256(bytes(activeGroups[i])) == keccak256(bytes(_groupName))) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    function findGroupIndex(string memory _groupName) internal view returns (uint256) {
+    for (uint256 i = 0; i < activeGroups.length; i++) {
+        if (keccak256(abi.encodePacked(activeGroups[i])) == keccak256(abi.encodePacked(_groupName))) {
+            return i;
+        }
+    }
+    revert("Group not found");
+}
 
 }
