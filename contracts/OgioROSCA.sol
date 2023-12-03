@@ -42,5 +42,39 @@ contract OgioROSCA is AccessControl {
         // Add any other member-related information you need
     }
 
+     // Declare the activeGroups variable as a state variable
+   // string[] public activeGroups;
+     // Mapping of group names to ROSCAGroup instances
+    mapping(string => ROSCAGroup) public activeGroups;
+
+    // Escrow contract address
+    address public escrowContract;
+    mapping(string => ROSCAGroup) private groupsByName;
+    mapping(string => mapping(address => UserRole)) private groupMemberRoles;
+    string[] public activeGroupNames;
+
+    // Declare the ROSCAGroupCreated event
+    event ROSCAGroupCreated(string _groupName);
+    event UserContributedFunds(string _groupName, address _userAddress, uint256 _amount);
+    event RecipientSelected(string _groupName, address _recipientAddress);
+    // Events for ReleaseFunds function
+    event FundsReleased(string _groupName, address _recipientAddress, uint256 _amount);
+    event ReleaseFailed(string _groupName, string _reason);
+    // Events for RepayFunds function
+    event FundsRepaid(string _groupName, address _userAddress, uint256 _amount);
+    event RepayFailed(string _groupName, string _reason);
+    // Events for ManageEscrow function
+    event EscrowManaged(string _action, string _groupName, address _userAddress);
+    // Events for TrackHistory function
+    event TransactionTracked(string _groupName, string _type, string _details);
+    // Events for VerifyDocumentation function
+    event DocumentationVerified(string _groupName, bool _isValid);
+    event VerificationFailed(string _groupName, string _reason);
+    // Event to notify of updated group details
+    event GroupUpdated(string _groupName, string _newDescription, uint256 _newContributionAmount);
+    // Event to notify when a user joins a ROSCA group
+    event UserJoinedROSCAGroup(string _groupName, address _userAddress);
+    // Event to notify when a user is removed from a ROSCA group
+    event UserRemoved(string _groupName, address _userAddress);
 
 }
