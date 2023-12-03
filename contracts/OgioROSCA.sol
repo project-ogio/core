@@ -214,4 +214,25 @@ contract OgioROSCA is AccessControl {
         emit UserContributedFunds(_groupName, msg.sender, msg.value);
     }
 
+     // Implement the RandomizeRecipient function
+    function randomizeRecipient(string memory _groupName) public {
+    // Check if the group exists
+    require(groupExists(_groupName), "Group does not exist");
+
+    // Get the list of group members
+    address[] memory members = activeGroups[_groupName].members;
+
+    // Generate a random index between 0 and the number of members - 1
+    uint256 randomIndex = uint256(keccak256(abi.encodePacked(block.timestamp))) % members.length;
+
+    // Select the recipient at the random index
+    address recipient = members[randomIndex];
+
+    // Set the current recipient to the selected recipient
+    activeGroups[_groupName].currentRecipient = recipient;
+
+    // Emit an event to notify other parts of the application that a recipient has been randomly selected
+    emit RecipientSelected(_groupName, recipient);
+    }
+
 }
