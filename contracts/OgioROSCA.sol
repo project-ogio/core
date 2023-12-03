@@ -153,5 +153,25 @@ contract OgioROSCA is AccessControl {
         emit ROSCAGroupCreated(_groupName);
     }
 
-    
+    // Function to list all active groups
+    function listActiveGroups() public view returns (ROSCAGroup[] memory) {
+        // Create an empty array to store group information
+        ROSCAGroup[] memory activeGroupsList = new ROSCAGroup[](activeGroups.length);
+
+        // Iterate through the activeGroups array and populate the array
+        for (uint256 index = 0; index < activeGroups.length; index++) {
+            string memory groupName = activeGroups[index];
+
+            // Check if the group is active
+            if (isGroupActive(groupName)) {
+                ROSCAGroup storage group = activeGroups[groupName];
+                activeGroupsList[index] = group;
+            }
+        }
+
+        // Return the array of group information
+        return activeGroupsList;
+    }
+
+
 }
