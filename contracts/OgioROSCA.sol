@@ -235,4 +235,26 @@ contract OgioROSCA is AccessControl {
     emit RecipientSelected(_groupName, recipient);
     }
 
+     // Implement the ReleaseFunds function
+    function releaseFunds(string memory _groupName) public {
+    // Check if the group exists
+    require(groupExists(_groupName), "Group does not exist");
+
+    // Check if the current recipient is valid
+    address recipient = activeGroups[_groupName].currentRecipient;
+    require(recipient != address(0), "No recipient selected");
+
+    // Call the escrow contract to release funds
+    bool success = OgioExcrow(escrowContract).releaseFunds(_groupName, recipient);
+
+    if (success) {
+        // Emit event on successful release
+        emit FundsReleased(_groupName, recipient, activeGroups[_groupName].contributionAmount);
+    } else {
+        // Emit event on release failure
+        emit ReleaseFailed(_groupName, "Escrow release failed");
+    }
+    }
+
+    
 }
