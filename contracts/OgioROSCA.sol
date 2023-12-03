@@ -173,5 +173,24 @@ contract OgioROSCA is AccessControl {
         return activeGroupsList;
     }
 
+    // Function to join a ROSCA group and grant the USER role
+    function joinROSCAGroup(string memory _groupName) public {
+        require(groupExists(_groupName), "Group does not exist");
+
+        // Check if the group is active
+        require(isGroupActive(_groupName), "Group is inactive");
+
+        // Check if the group is full
+        require(activeGroups[_groupName].members.length < activeGroups[_groupName].numberOfMembers, "Group is full");
+
+        // Add the user to the group's members list
+        activeGroups[_groupName].members.push(msg.sender);
+
+        // Grant the USER role to the joined user
+        _grantRole(USER_ROLE, msg.sender);
+
+        // Emit an event to notify other parts of the application that a user has joined the ROSCA group
+        emit UserJoinedROSCAGroup(_groupName, msg.sender);
+    }
 
 }
