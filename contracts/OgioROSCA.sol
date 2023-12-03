@@ -278,5 +278,21 @@ contract OgioROSCA is AccessControl {
     return activeGroups[_groupName].members;
     }
 
+    // Implement update details function
+    function updateDetails(string memory _groupName, string memory _newDescription, uint256 _newContributionAmount) public {
+    // Check if the group exists
+    require(groupExists(_groupName), "Group does not exist");
+
+    // Check access control (e.g., only Coordinator or Admin can update details)
+    require(hasRole(UserRole.Coordinator) || hasRole(UserRole.Admin), "Unauthorized action");
+
+    // Update group details
+    activeGroups[_groupName].description = _newDescription;
+    activeGroups[_groupName].contributionAmount = _newContributionAmount;
+
+    // Emit event
+    emit GroupUpdated(_groupName, _newDescription, _newContributionAmount);
+    }
+
 
 }
