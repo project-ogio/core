@@ -193,4 +193,25 @@ contract OgioROSCA is AccessControl {
         emit UserJoinedROSCAGroup(_groupName, msg.sender);
     }
 
+     // Implement the ContributeFunds function
+    function contributeFunds(string memory _groupName) public payable {
+        // Check if the group exists
+        require(groupExists(_groupName), "Group does not exist");
+
+        // Check if the group is active
+        require(isGroupActive(_groupName), "Group is inactive");
+
+        // Check if the user is a member of the group
+        require(activeGroups[_groupName].members.contains(msg.sender), "User is not a member of the group");
+
+        // Check if the contribution amount is valid
+        require(msg.value == activeGroups[_groupName].contributionAmount, "Invalid contribution amount");
+
+        // Update the user's contribution amount
+        activeGroups[_groupName].contributions[msg.sender] += msg.value;
+
+        // Emit an event to notify other parts of the application that a user has contributed funds to the ROSCA group
+        emit UserContributedFunds(_groupName, msg.sender, msg.value);
+    }
+
 }
