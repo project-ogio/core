@@ -77,4 +77,37 @@ contract OgioROSCA is AccessControl {
     // Event to notify when a user is removed from a ROSCA group
     event UserRemoved(string _groupName, address _userAddress);
 
+    function grantUserRole(string memory _groupName, address _userAddress) public {
+    require(hasRole(ADMIN_ROLE, msg.sender), "Unauthorized action");
+
+    // Check if the group exists
+    require(groupExists(_groupName), "Group does not exist");
+
+    // Access the group object
+    ROSCAGroup storage group = groupsByName[_groupName];
+
+    // Add user to the group and grant user role
+    group.members.push(_userAddress);
+    _grantRole(USER_ROLE, _userAddress);
+}
+
+    function hasRole(UserRole role, string memory _groupName, address _userAddress) public view returns (bool) {
+    if (role == UserRole.Member) {
+        // Access the group object
+        ROSCAGroup storage group = groupsByName[_groupName];
+
+        // Check if the user is a member of the group
+        address[] storage members = group.members;
+        for (uint256 i = 0; i < members.length; i++) {
+            if (members[i] == msg.sender) {
+                return true;
+            }
+        }
+        return false;
+    } else {
+        // Check for admin role using OpenZeppelin method
+        return hasRole(ADMIN_ROLE, msg.sender);
+    }
+}
+
 }
