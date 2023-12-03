@@ -294,5 +294,25 @@ contract OgioROSCA is AccessControl {
     emit GroupUpdated(_groupName, _newDescription, _newContributionAmount);
     }
 
+    // Implement the RepayFunds function
+    function repayFunds(string memory _groupName, uint256 _amount) public {
+    // Check if the group exists
+    require(groupExists(_groupName), "Group does not exist");
+
+    // Call the escrow contract to repay funds
+    bool success = OgioExcrow(escrowContract).repayFunds(_groupName, msg.sender, _amount);
+
+    if (success) {
+        // Update user's contribution
+        activeGroups[_groupName].contributions[msg.sender] -= _amount;
+
+        // Emit event on successful repayment
+        emit FundsRepaid(_groupName, msg.sender, _amount);
+    } else {
+        // Emit event on repayment failure
+        emit RepayFailed(_groupName, "Escrow repay failed");
+    }
+    }
+
 
 }
