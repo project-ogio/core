@@ -1,12 +1,12 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.20;
 
-import "@openzeppelin/contracts/access/AccessControl.sol";
-import "@openzeppelin/contracts/access/IAccessControl.sol";
-import "@openzeppelin/contracts/utils/Context.sol";
-import "@openzeppelin/contracts/utils/introspection/ERC165.sol";
-import "@openzeppelin/contracts/utils/introspection/IERC165.sol";
-import "./OgioExcrow.sol";
+import {AccessControl} from "@openzeppelin/contracts/access/AccessControl.sol";
+import {IAccessControl} from"@openzeppelin/contracts/access/IAccessControl.sol";
+import {Context} from"@openzeppelin/contracts/utils/Context.sol";
+import {ERC165} from"@openzeppelin/contracts/utils/introspection/ERC165.sol";
+import {IERC165} from"@openzeppelin/contracts/utils/introspection/IERC165.sol";
+//import "./OgioExcrow.sol";
 
 contract OgioROSCA is AccessControl {
 
@@ -186,19 +186,19 @@ contract OgioROSCA is AccessControl {
         emit RecipientSelected(_groupName, recipient);
     }
 
-    function releaseFunds(string memory _groupName) public {
-        require(groupExists(_groupName), "Group does not exist");
-        address recipient = activeGroups[_groupName].currentRecipient;
-        require(recipient != address(0), "No recipient selected");
+    // function releaseFunds(string memory _groupName) public {
+    //     require(groupExists(_groupName), "Group does not exist");
+    //     address recipient = activeGroups[_groupName].currentRecipient;
+    //     require(recipient != address(0), "No recipient selected");
 
-        bool success = OgioExcrow(escrowContract).releaseFunds(_groupName, recipient);
+    //     bool success = OgioExcrow(escrowContract).releaseFunds(_groupName, recipient);
 
-        if (success) {
-            emit FundsReleased(_groupName, recipient, activeGroups[_groupName].contributionAmount);
-        } else {
-            emit ReleaseFailed(_groupName, "Escrow release failed");
-        }
-    }
+    //     if (success) {
+    //         emit FundsReleased(_groupName, recipient, activeGroups[_groupName].contributionAmount);
+    //     } else {
+    //         emit ReleaseFailed(_groupName, "Escrow release failed");
+    //     }
+    // }
 
     function removeUser(string memory _groupName, address _userAddress) public {
         require(groupExists(_groupName), "Group does not exist");
@@ -225,39 +225,39 @@ contract OgioROSCA is AccessControl {
         emit GroupUpdated(_groupName, _newDescription, _newContributionAmount);
     }
 
-    function repayFunds(string memory _groupName, uint256 _amount) public {
-        require(groupExists(_groupName), "Group does not exist");
-        bool success = OgioExcrow(escrowContract).repayFunds(_groupName, msg.sender, _amount);
+    // function repayFunds(string memory _groupName, uint256 _amount) public {
+    //     require(groupExists(_groupName), "Group does not exist");
+    //     bool success = OgioExcrow(escrowContract).repayFunds(_groupName, msg.sender, _amount);
 
-        if (success) {
-            activeGroups[_groupName].contributions[msg.sender] -= _amount;
-            emit FundsRepaid(_groupName, msg.sender, _amount);
-        } else {
-            emit RepayFailed(_groupName, "Escrow repay failed");
-        }
-    }
+    //     if (success) {
+    //         activeGroups[_groupName].contributions[msg.sender] -= _amount;
+    //         emit FundsRepaid(_groupName, msg.sender, _amount);
+    //     } else {
+    //         emit RepayFailed(_groupName, "Escrow repay failed");
+    //     }
+    // }
 
-    function manageEscrow(string memory _action, string memory _groupName, address _userAddress) public {
-        require(groupExists(_groupName), "Group does not exist");
-        OgioExcrow(escrowContract).manageEscrow(_action, _groupName, _userAddress);
-        emit EscrowManaged(_action, _groupName, _userAddress);
-    }
+    // function manageEscrow(string memory _action, string memory _groupName, address _userAddress) public {
+    //     require(groupExists(_groupName), "Group does not exist");
+    //     OgioExcrow(escrowContract).manageEscrow(_action, _groupName, _userAddress);
+    //     emit EscrowManaged(_action, _groupName, _userAddress);
+    // }
 
-    function trackHistory(string memory _groupName, string memory _type, string memory _details) public {
-        OgioExcrow(escrowContract).trackHistory(_groupName, _type, _details);
-        emit TransactionTracked(_groupName, _type, _details);
-    }
+    // function trackHistory(string memory _groupName, string memory _type, string memory _details) public {
+    //     OgioExcrow(escrowContract).trackHistory(_groupName, _type, _details);
+    //     emit TransactionTracked(_groupName, _type, _details);
+    // }
 
-    function verifyDocumentation(string memory _groupName, string memory _documentHash) public {
-        require(groupExists(_groupName), "Group does not exist");
-        bool isValid = OgioExcrow(escrowContract).verifyDocumentation(_groupName, _documentHash);
+    // function verifyDocumentation(string memory _groupName, string memory _documentHash) public {
+    //     require(groupExists(_groupName), "Group does not exist");
+    //     bool isValid = OgioExcrow(escrowContract).verifyDocumentation(_groupName, _documentHash);
 
-        if (isValid) {
-            emit DocumentationVerified(_groupName, true);
-        } else {
-            emit VerificationFailed(_groupName, "Invalid documentation");
-        }
-    }
+    //     if (isValid) {
+    //         emit DocumentationVerified(_groupName, true);
+    //     } else {
+    //         emit VerificationFailed(_groupName, "Invalid documentation");
+    //     }
+    // }
 
     function isGroupActive(string memory _groupName) internal view returns (bool) {
         uint256 currentDate = block.timestamp;
