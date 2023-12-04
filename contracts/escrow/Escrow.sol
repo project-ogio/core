@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.20;
 
+import "../OgioParent.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 
 contract Escrow is Ownable {
@@ -63,13 +64,13 @@ contract Escrow is Ownable {
      * @dev Withdraw accumulated balance for a payee.
      * @param payee The address whose funds will be withdrawn and transferred to.
      */
-    function withdraw(address payee) internal onlyOwner{
+    function withdraw(address payable payee) internal onlyOwner{
         require(withdrawalAllowed(payee));
         uint256 payment = _deposits[payee];
 
         _deposits[payee] = 0;
 
-        //payee.transfer(payment);
+        payee.transfer(payment);
 
         emit Withdrawn(payee, payment);
     }
