@@ -110,22 +110,6 @@ contract Escrow is OgioService, VRFV2WrapperConsumerBase, ConfirmedOwner {
         emit PaymentReceived(msg.sender, msg.value);
     }
 
-    receive() external payable virtual {
-        requireContributorExists();
-        uint256 amount = token.balanceOf(msg.value);
-        require(
-            amount == contribution,
-            "Escrow: Contribution does not match this contract"
-        );
-        require(
-            _state == State.AcceptingDeposits,
-            "This escrow service is not accepting deposits"
-        );
-
-        depositUnits[msg.sender] += 1;
-        emit PaymentReceived(msg.sender, amount);
-    }
-
     /**
      * @return the current state of the escrow.
      */
