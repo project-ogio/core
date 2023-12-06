@@ -9,7 +9,7 @@ import {IERC165} from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
 //import "./OgioExcrow.sol";
 import {OgioService} from "./OgioParent.sol";
 
-contract OgioROSCA is OgioService {
+contract OgioROSCA is AccessControl, OgioService {
     // Mapping of group names to ROSCAGroup instances
     mapping(string => ROSCAGroup) private activeGroups;
     string[] private activeGroupNames;
